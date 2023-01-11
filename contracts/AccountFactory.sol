@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 import "./AccountPLayer.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -15,6 +16,8 @@ contract AccountFactory is
     PausableUpgradeable
 {
     using SafeERC20 for IERC20;
+    mapping(uint256 => address) public accountAddress;
+    event CreatedAccount(uint256 idPlayer, address account);
 
     function createPlayer(uint256 _id) public {
         address createdAccount;
@@ -33,6 +36,8 @@ contract AccountFactory is
             }
         }
         require(createdAccount != address(0), "Create2: Failed on deploy");
+        accountAddress[_id] = createdAccount;
+        emit CreatedAccount(_id, createdAccount);
     }
 
     function _authorizeUpgrade(address newImplementation)

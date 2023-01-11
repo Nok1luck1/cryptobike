@@ -10,7 +10,6 @@ require("hardhat-contract-sizer");
 import "hardhat-abi-exporter";
 require("@openzeppelin/hardhat-upgrades");
 require("@nomiclabs/hardhat-web3");
-import "@uniswap/hardhat-v3-deploy";
 
 const dotenv = require("dotenv");
 dotenv.config({ path: __dirname + "/.env" });
