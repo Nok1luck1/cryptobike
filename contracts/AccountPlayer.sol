@@ -18,6 +18,8 @@ contract AccountPlayer is AccessControl, ERC721Holder {
         require(msg.data.length == 0);
     }
 
+    function setPause() public onlyRole(DEFAULT_ADMIN_ROLE) {}
+
     function sellOwnership(address newOwner)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)

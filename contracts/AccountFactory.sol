@@ -1,7 +1,7 @@
 pragma solidity 0.8.17;
 import "./AccountPLayer.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
@@ -19,7 +19,20 @@ contract AccountFactory is
     function createPlayer(uint256 _id) public {
         address createdAccount;
         bytes memory bytecodeAccount = type(AccountPlayer).creationCode;
-        bytes32 AccountSalt = keccak256(abi.encodePacked(address(msg.sender)));
+        bytes32 salt = keccak256(
+            abi.encodePacked(address(this), address(msg.sender), _id)
+        );
+        assembly {
+            {
+                createdAccount := create2(
+                    0,
+                    add(bytecodeAccount, 0x20),
+                    mload(bytecodeAccount),
+                    salt
+                )
+            }
+        }
+        require(createdAccount != address(0), "Create2: Failed on deploy");
     }
 
     function _authorizeUpgrade(address newImplementation)
