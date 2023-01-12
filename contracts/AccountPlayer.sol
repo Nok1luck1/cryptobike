@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "./IAccountPlayer.sol";
 
 contract AccountPlayer is AccessControl, ERC721Holder, Pausable {
     using SafeERC20 for IERC20;
@@ -30,7 +31,7 @@ contract AccountPlayer is AccessControl, ERC721Holder, Pausable {
         require(msg.data.length == 0);
     }
 
-    function setBlock() public onlyRole(FACTORY_ROLE) {
+    function setBlock() external onlyRole(FACTORY_ROLE) {
         isBlackListed = true;
     }
 
