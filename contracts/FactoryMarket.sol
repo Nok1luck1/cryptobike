@@ -149,6 +149,10 @@ contract FactoryMarket is
         }
     }
 
+    function cancelOrder(bytes32 hashOrder, address receiveTarget) public {
+        OrderInfo storage order = OrderByHash[hashOrder];
+    }
+
     function changeFeePercent(uint256 newPercent)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
