@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
 // import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
@@ -42,7 +43,19 @@ contract FactoryMarket is
         address target,
         address creator,
         bytes32 hashOrder,
-        OrderType order
+        OrderType typeOrder
+    );
+    event CancelOrder(
+        address target,
+        address canceler,
+        bytes32 hashOrder,
+        OrderType typeOrder
+    );
+    event BuyInOrder(
+        address target,
+        address buyer,
+        bytes32 hashOrder,
+        OrderType typeOrder
     );
 
     function generateAccount() public {
@@ -61,7 +74,10 @@ contract FactoryMarket is
                 )
             }
         }
-        require(createdAccount != address(0), "Create2: Failed on deploy");
+        require(
+            createdAccount != address(0),
+            "Create2: Failed to create Account"
+        );
         accountAddress[msg.sender] = createdAccount;
         emit CreatedAccount(address(msg.sender), createdAccount);
     }
@@ -129,28 +145,92 @@ contract FactoryMarket is
 
     function buyFromOrder(
         bytes32 hashOrder,
-        uint256 amount,
+        uint256 _amount,
         address receiver
-    ) public {
+    ) public payable {
         OrderInfo storage order = OrderByHash[hashOrder];
-        uint256 amountToPayment = order.price * amount;
+        uint256 amountToPayment = order.price * _amount;
+
         uint256 amountToSeller = calculateFee(amountToPayment);
-        if (order.typeOrder == OrderType.ERC721) {
+        //send payment to seller
+        if (order.paymentToken == address(0)) {
+            AddressUpgradeable.sendValue(payable(order.seller), amountToSeller);
+        } else {
             IERC20Upgradeable(order.paymentToken).transfer(
-                receiver,
+                order.seller,
                 amountToSeller
             );
+        }
+        if (order.typeOrder == OrderType.ERC721) {
             IERC721(order.target).safeTransferFrom(
                 address(this),
                 msg.sender,
                 order.nftId,
                 order.data
             );
+            emit BuyInOrder(
+                order.target,
+                _msgSender(),
+                hashOrder,
+                order.typeOrder
+            );
+            delete OrderByHash[hashOrder];
+        }
+        if (order.typeOrder == OrderType.ERC1155) {
+            IERC1155(order.target).safeTransferFrom(
+                address(this),
+                receiver,
+                order.nftId,
+                _amount,
+                order.data
+            );
+            uint256 newAmount = order.amount - _amount;
+            order.amount = newAmount;
+            emit BuyInOrder(
+                order.target,
+                _msgSender(),
+                hashOrder,
+                order.typeOrder
+            );
+            if (order.amount == 0) {
+                delete OrderByHash[hashOrder];
+            }
+        }
+        if (order.typeOrder == OrderType.Account) {
+            IAccountPlayer(order.target).grandRoleNewOwner(_msgSender());
+            emit BuyInOrder(
+                order.target,
+                _msgSender(),
+                hashOrder,
+                order.typeOrder
+            );
+            delete OrderByHash[hashOrder];
         }
     }
 
     function cancelOrder(bytes32 hashOrder, address receiveTarget) public {
         OrderInfo storage order = OrderByHash[hashOrder];
+        require(msg.sender == order.seller);
+        if (order.typeOrder == OrderType.ERC721) {
+            IERC721(order.target).safeTransferFrom(
+                address(this),
+                receiveTarget,
+                order.nftId,
+                order.data
+            );
+        } else if (order.typeOrder == OrderType.ERC1155) {
+            IERC1155(order.target).safeTransferFrom(
+                address(this),
+                receiveTarget,
+                order.nftId,
+                order.amount,
+                order.data
+            );
+        } else if (order.typeOrder == OrderType.Account) {
+            IAccountPlayer(order.target).setPause();
+        }
+        emit CancelOrder(order.target, msg.sender, hashOrder, order.typeOrder);
+        delete OrderByHash[hashOrder];
     }
 
     function changeFeePercent(uint256 newPercent)
@@ -164,6 +244,19 @@ contract FactoryMarket is
         uint256 amountFee = (bill / 1000) * fee;
         uint256 sendToSeller = bill - amountFee;
         return sendToSeller;
+    }
+
+    function withdrawFee(address token, uint256 _amount)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (uint256)
+    {
+        IERC20Upgradeable(token).transfer(address(msg.sender), _amount);
+        return _amount;
+    }
+
+    function widtrawValue(uint256 _amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        AddressUpgradeable.sendValue(payable(_msgSender()), _amount);
     }
 
     function _authorizeUpgrade(address newImplementation)

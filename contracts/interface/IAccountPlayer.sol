@@ -4,5 +4,7 @@ pragma solidity 0.8.17;
 interface IAccountPlayer {
     function setBlock() external;
 
+    function grandRoleNewOwner(address newOwner) external;
+
     function setPause() external;
 }

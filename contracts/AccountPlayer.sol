@@ -35,6 +35,15 @@ contract AccountPlayer is AccessControl, ERC721Holder, Pausable {
         isBlackListed = true;
     }
 
+    function grandRoleNewOwner(address newOwner)
+        external
+        onlyRole(FACTORY_ROLE)
+    {
+        revokeRole(DEFAULT_ADMIN_ROLE, currentOwner);
+        grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+        currentOwner = newOwner;
+    }
+
     function setPause(bool _newPauseState) external {
         require(
             hasRole(FACTORY_ROLE, msg.sender) ||
