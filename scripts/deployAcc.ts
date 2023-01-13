@@ -9,7 +9,7 @@ async function main() {
 
   const market = await FactoryMarketContr.deploy(
     deployer.address,
-    deployer.address,
+
     112
   );
   await market.deployed();
