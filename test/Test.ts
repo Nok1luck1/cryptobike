@@ -3,7 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 
 const { upgrades, ethers } = require("hardhat");
-import { AccountPlayer } from "../artifacts/contracts/AccountPlayer.sol/AccountPlayer.json";
+import Player from "../artifacts/contracts/AccountPlayer.sol/AccountPlayer.json";
 
 describe("Factory Market", function () {
   async function deployOneYearLockFixture() {
@@ -30,15 +30,11 @@ describe("Factory Market", function () {
       const addressGenerated = await market.accountAddress(deployer.address);
       console.log(`${addressGenerated},Account created`);
       const generatedAcc = await ethers.getContractAt(
-        AccountPlayer.abi,
+        Player.abi,
         createAccountAddress
       );
-      expect(
-        await generatedAcc.hasRole(
-          deployer.address,
-          "0x0000000000000000000000000000000000000000000000000000000000000000"
-        )
-      ).to.equal(true);
+      const role = await generatedAcc.FACTORY_ROLE;
+      expect(await generatedAcc.hasRole(deployer.address, role)).to.equal(true);
     });
 
     // it("Should set the right owner", async function () {
