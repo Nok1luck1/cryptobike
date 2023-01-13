@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 import "./AccountPlayer.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -12,7 +12,6 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 contract FactoryMarket is
-    ReentrancyGuard,
     Initializable,
     UUPSUpgradeable,
     AccessControlUpgradeable,
@@ -38,7 +37,11 @@ contract FactoryMarket is
     uint256 public fee; //1% = 10
     mapping(bytes32 => OrderInfo) public OrderByHash;
     mapping(address => address) public accountAddress;
-    event CreatedAccount(address User, address generatedAccount);
+    event CreatedAccount(
+        address User,
+        address generatedAccount,
+        uint256 accountId
+    );
     event CreatedOrder(
         address target,
         address creator,
@@ -58,11 +61,27 @@ contract FactoryMarket is
         OrderType typeOrder
     );
 
-    function generateAccount() public {
+    function initialize(address owner) public initializer {
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        grantRole(DEFAULT_ADMIN_ROLE, owner);
+        fee = 30;
+        __Pausable_init();
+        __AccessControl_init();
+        __UUPSUpgradeable_init();
+    }
+
+    function generateAccount(uint256 accountId)
+        public
+        returns (address createdAccount)
+    {
         address createdAccount;
+        require(
+            accountAddress[msg.sender] == address(0),
+            "You cant Create more accounts"
+        );
         bytes memory bytecodeAccount = type(AccountPlayer).creationCode;
         bytes32 salt = keccak256(
-            abi.encodePacked(address(this), address(msg.sender))
+            abi.encodePacked(address(msg.sender), address(this), accountId)
         );
         assembly {
             {
@@ -79,7 +98,9 @@ contract FactoryMarket is
             "Create2: Failed to create Account"
         );
         accountAddress[msg.sender] = createdAccount;
-        emit CreatedAccount(address(msg.sender), createdAccount);
+
+        emit CreatedAccount(address(msg.sender), createdAccount, accountId);
+        return createdAccount;
     }
 
     function createOrder(

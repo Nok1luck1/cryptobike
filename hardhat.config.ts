@@ -72,8 +72,8 @@ module.exports = {
       gasPrice: 20e9,
       accounts: [PRIVATE_KEY],
     },
-    testnetBSC: {
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+    bscTestnet: {
+      url: "https://data-seed-prebsc-1-s3.binance.org:8545/",
       chainId: 97,
       gasPrice: 20e9,
       accounts: [PRIVATE_KEY],
@@ -159,7 +159,7 @@ module.exports = {
       opera: "GW6QZKHE1NMBJF25YJBJCPUA1RMJA2DQNS",
       ftmTestnet: "GW6QZKHE1NMBJF25YJBJCPUA1RMJA2DQNS",
       optimisticEthereum: "KW65HGUSMTTVR8NDX9FJ986JTWC2HUY4UV",
-      optimisticKovan: "KW65HGUSMTTVR8NDX9FJ986JTWC2HUY4UV",
+      //optimisticKovan: "KW65HGUSMTTVR8NDX9FJ986JTWC2HUY4UV",
       polygon: "YNW28KKR9B2IZ62ARK2SEIW2D41ZMWJD5R",
       polygonMumbai: "YNW28KKR9B2IZ62ARK2SEIW2D41ZMWJD5R",
       arbitrumOne: "NRFSTYK86TXES95DKF731NKWR3JNTTHS7K",
@@ -183,7 +183,7 @@ module.exports = {
       {
         version: "0.8.17",
         settings: {
-          viaIR: true,
+          viaIR: false,
           optimizer: {
             enabled: true,
             runs: 100,
@@ -193,7 +193,7 @@ module.exports = {
       {
         version: "0.8.10",
         settings: {
-          viaIR: true,
+          viaIR: false,
           optimizer: {
             enabled: true,
             runs: 200,

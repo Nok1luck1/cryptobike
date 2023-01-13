@@ -1,17 +1,17 @@
-import { ethers, upgrades } from "hardhat";
+import { deploy } from "@openzeppelin/hardhat-upgrades/dist/utils";
+import { ethers } from "hardhat";
 const hre = require("hardhat");
 
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log(deployer.address, "deployed address");
-  const FactoryMarketContr = await ethers.getContractFactory("FactoryMarket");
-  const initValue = [
-    deployer.address, //must be owner
-  ];
-  const market = await upgrades.deployProxy(FactoryMarketContr, initValue, {
-    initializer: "initialize",
-    kind: "uups",
-  });
+  const FactoryMarketContr = await ethers.getContractFactory("AccountPlayer");
+
+  const market = await FactoryMarketContr.deploy(
+    deployer.address,
+    deployer.address,
+    112
+  );
   await market.deployed();
   console.log(`Market address : ${market.address}`);
 }

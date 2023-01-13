@@ -52,10 +52,7 @@ contract AccountPlayer is AccessControl, ERC721Holder, Pausable {
         _newPauseState ? _pause() : _unpause();
     }
 
-    function sellOwnership(address newOwner)
-        public
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function sellOwnership(address newOwner) public onlyRole(FACTORY_ROLE) {
         revokeRole(DEFAULT_ADMIN_ROLE, currentOwner);
         grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         currentOwner = newOwner;
