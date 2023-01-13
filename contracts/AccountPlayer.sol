@@ -17,8 +17,9 @@ contract AccountPlayer is AccessControl, ERC721Holder, Pausable {
 
     constructor(address owner, uint256 idAccount) {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        grantRole(FACTORY_ROLE, _msgSender());
-        grantRole(DEFAULT_ADMIN_ROLE, owner);
+        //grantRole(FACTORY_ROLE, _msgSender());
+        //grantRole(DEFAULT_ADMIN_ROLE, owner);
+        currentOwner = owner;
         UserID = idAccount;
     }
 
