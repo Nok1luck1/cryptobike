@@ -3,14 +3,14 @@
   "proxies": [
     {
       "address": "0xB06c856C8eaBd1d8321b687E188204C1018BC4E5",
-      "txHash": "0x74c0f4e0883ee7e505fcae5324699db15cb6a87a4aa170c87cff12233ad2ed34",
+      "txHash": "0x239975f922c00f5f1c2a02db776d9d1cfe839ee8fdca6db2fd74f911c13f2371",
       "kind": "uups"
     }
   ],
   "impls": {
-    "252f611c0525285423c7d97a23a1a2ec161978c528589196b19793d85e87fb1f": {
+    "bd2920bf2f5390f74192e8e548ad8109b8dda248212d80314bea5481e39e4c51": {
       "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-      "txHash": "0xd155f3e9a7f752687646c8ed2d1692971c88b1e0f428c509e958d5625d91f1a1",
+      "txHash": "0x0af9b8467de81e8e8f63ac6299aa047143e630d9d03e5cd2cc1a39faed4f3623",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -107,7 +107,7 @@
             "label": "OrderByHash",
             "offset": 0,
             "slot": "302",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)6079_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)6084_storage)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:38"
           },
@@ -145,7 +145,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)6061": {
+          "t_enum(OrderType)6066": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -162,7 +162,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)6079_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)6084_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -170,12 +170,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)6079_storage": {
+          "t_struct(OrderInfo)6084_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)6061",
+                "type": "t_enum(OrderType)6066",
                 "offset": 0,
                 "slot": "0"
               },

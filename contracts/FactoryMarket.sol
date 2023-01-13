@@ -81,7 +81,7 @@ contract FactoryMarket is
         );
         bytes memory bytecodeAccount = type(AccountPlayer).creationCode;
         bytes32 salt = keccak256(
-            abi.encodePacked(address(msg.sender), address(this), accountId)
+            abi.encodePacked(address(msg.sender), accountId)
         );
         assembly {
             {
