@@ -2,10 +2,10 @@
 pragma solidity 0.8.17;
 import "./AccountPlayer.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
@@ -76,13 +76,15 @@ contract FactoryMarket is
     {
         address createdAccount;
         require(
-            accountAddress[msg.sender] == address(0),
+            accountAddress[_msgSender()] == address(0),
             "You cant Create more accounts"
         );
         bytes memory bytecodeAccount = type(AccountPlayer).creationCode;
-        bytes32 salt = keccak256(
-            abi.encodePacked(address(msg.sender), accountId)
+        require(
+            bytecodeAccount.length != 0,
+            "Create2: bytecode length is zero"
         );
+        bytes32 salt = keccak256(abi.encodePacked(_msgSender(), accountId));
         assembly {
             {
                 createdAccount := create2(
@@ -97,9 +99,9 @@ contract FactoryMarket is
             createdAccount != address(0),
             "Create2: Failed to create Account"
         );
-        accountAddress[msg.sender] = createdAccount;
+        accountAddress[_msgSender()] = createdAccount;
 
-        emit CreatedAccount(address(msg.sender), createdAccount, accountId);
+        emit CreatedAccount(_msgSender(), createdAccount, accountId);
         return createdAccount;
     }
 
