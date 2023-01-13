@@ -3,9 +3,9 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/Pausableupgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "./interface/IAccountPlayer.sol";
 
 contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
@@ -13,14 +13,18 @@ contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
     uint256 public UserID;
     address public currentOwner;
     bool public isBlackListed;
+    address public factory;
     bytes32 public constant FACTORY_ROLE = keccak256("FACTORY_ROLE");
 
-    constructor(address owner, uint256 idAccount) {
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        //grantRole(FACTORY_ROLE, _msgSender());
-        //grantRole(DEFAULT_ADMIN_ROLE, owner);
-        currentOwner = owner;
-        UserID = idAccount;
+    constructor() {
+        factory = msg.sender;
+    }
+
+    function initialize(address _owner) external {
+        require(msg.sender == factory, "Only for factory");
+        currentOwner = _owner;
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+        _setupRole(FACTORY_ROLE, msg.sender);
     }
 
     receive() external payable {}
@@ -56,38 +60,41 @@ contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
         currentOwner = newOwner;
     }
 
-    // function withdrawNFT(
-    //     address nft,
-    //     address _to,
-    //     uint256 _tokenId
-    // ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
-    //     IERC721(nft).safeTransferFrom(address(this), _to, _tokenId);
-    // }
+    function withdrawNFT(
+        address nft,
+        address _to,
+        uint256 _tokenId
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+        IERC721Upgradeable(nft).safeTransferFrom(address(this), _to, _tokenId);
+    }
 
-    // function witdhrawToken(
-    //     address token,
-    //     address _to,
-    //     uint256 amount
-    // ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
-    //     IERC20(token).transfer(_to, amount);
-    // }
+    function witdhrawToken(
+        address token,
+        address _to,
+        uint256 amount
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+        IERC20Upgradeable(token).transfer(_to, amount);
+    }
 
-    // function witdhrawCollection(
-    //     address collection,
-    //     address _to,
-    //     uint256 _tokenId,
-    //     uint256 amount,
-    //     bytes calldata _data
-    // ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
-    //     require(
-    //         IERC1155(collection).balanceOf(address(this), _tokenId) >= amount
-    //     );
-    //     IERC1155(collection).safeTransferFrom(
-    //         address(this),
-    //         _to,
-    //         _tokenId,
-    //         amount,
-    //         _data
-    //     );
-    // }
+    function witdhrawCollection(
+        address collection,
+        address _to,
+        uint256 _tokenId,
+        uint256 amount,
+        bytes calldata _data
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+        require(
+            IERC1155Upgradeable(collection).balanceOf(
+                address(this),
+                _tokenId
+            ) >= amount
+        );
+        IERC1155Upgradeable(collection).safeTransferFrom(
+            address(this),
+            _to,
+            _tokenId,
+            amount,
+            _data
+        );
+    }
 }

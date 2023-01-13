@@ -1,20 +1,13 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+
+const { upgrades, ethers } = require("hardhat");
 import { AccountPlayer } from "../artifacts/contracts/AccountPlayer.sol/AccountPlayer.json";
 
 describe("Factory Market", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
   async function deployOneYearLockFixture() {
     const [deployer] = await ethers.getSigners();
-    //const signers = await ethers.getSigners();
-    // let user1: SignerWithAddress;
-    // user1 = signers[1];
-    // let user: SignerWithAddress;
-    // user = deployer[1];
     console.log(deployer.address, "deployed address");
     const FactoryMarketContr = await ethers.getContractFactory("FactoryMarket");
     const initValue = [
@@ -34,7 +27,8 @@ describe("Factory Market", function () {
     it("Should created Account", async function () {
       const { market, deployer } = await loadFixture(deployOneYearLockFixture);
       const createAccountAddress = await market.generateAccount(123);
-      console.log(`${createAccountAddress},Account created`);
+      const addressGenerated = await market.accountAddress(deployer.address);
+      console.log(`${addressGenerated},Account created`);
       const generatedAcc = await ethers.getContractAt(
         AccountPlayer.abi,
         createAccountAddress

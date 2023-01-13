@@ -6,5 +6,7 @@ interface IAccountPlayer {
 
     function grandRoleNewOwner(address newOwner) external;
 
+    function initialize(address owner) external;
+
     function setPause() external;
 }

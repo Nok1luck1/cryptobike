@@ -99,8 +99,8 @@ contract FactoryMarket is
             createdAccount != address(0),
             "Create2: Failed to create Account"
         );
+        IAccountPlayer(createdAccount).initialize(_msgSender());
         accountAddress[_msgSender()] = createdAccount;
-
         emit CreatedAccount(_msgSender(), createdAccount, accountId);
         return createdAccount;
     }
@@ -121,7 +121,7 @@ contract FactoryMarket is
             require(msg.value == _amount, "CRO3");
         }
         if (_orderType == OrderType.ERC721) {
-            IERC721(_target).safeTransferFrom(
+            IERC721Upgradeable(_target).safeTransferFrom(
                 msg.sender,
                 address(this),
                 _nftID,
@@ -136,7 +136,7 @@ contract FactoryMarket is
             order.seller = msg.sender;
             order.target = _target;
         } else if (_orderType == OrderType.ERC1155) {
-            IERC1155(_target).safeTransferFrom(
+            IERC1155Upgradeable(_target).safeTransferFrom(
                 msg.sender,
                 address(this),
                 _nftID,
@@ -185,7 +185,7 @@ contract FactoryMarket is
             );
         }
         if (order.typeOrder == OrderType.ERC721) {
-            IERC721(order.target).safeTransferFrom(
+            IERC721Upgradeable(order.target).safeTransferFrom(
                 address(this),
                 msg.sender,
                 order.nftId,
@@ -200,7 +200,7 @@ contract FactoryMarket is
             delete OrderByHash[hashOrder];
         }
         if (order.typeOrder == OrderType.ERC1155) {
-            IERC1155(order.target).safeTransferFrom(
+            IERC1155Upgradeable(order.target).safeTransferFrom(
                 address(this),
                 receiver,
                 order.nftId,
@@ -235,14 +235,14 @@ contract FactoryMarket is
         OrderInfo storage order = OrderByHash[hashOrder];
         require(msg.sender == order.seller);
         if (order.typeOrder == OrderType.ERC721) {
-            IERC721(order.target).safeTransferFrom(
+            IERC721Upgradeable(order.target).safeTransferFrom(
                 address(this),
                 receiveTarget,
                 order.nftId,
                 order.data
             );
         } else if (order.typeOrder == OrderType.ERC1155) {
-            IERC1155(order.target).safeTransferFrom(
+            IERC1155Upgradeable(order.target).safeTransferFrom(
                 address(this),
                 receiveTarget,
                 order.nftId,
