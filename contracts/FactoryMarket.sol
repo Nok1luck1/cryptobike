@@ -2,22 +2,20 @@
 pragma solidity 0.8.17;
 import "./AccountPlayer.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-//import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-//import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
-
-// import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 
 contract FactoryMarket is
     Initializable,
     UUPSUpgradeable,
     AccessControlUpgradeable,
-    PausableUpgradeable
+    PausableUpgradeable,
+    ERC1155HolderUpgradeable
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     enum OrderType {
@@ -293,6 +291,15 @@ contract FactoryMarket is
         bytes memory _data
     ) public returns (bytes4) {
         return this.onERC721Received.selector;
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 
     function _authorizeUpgrade(address newImplementation)

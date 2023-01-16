@@ -7,15 +7,30 @@
       "kind": "uups"
     },
     {
+      "address": "0x045857BDEAE7C1c7252d611eB24eB55564198b4C",
+      "txHash": "0x222190a9cf7179013c405853193e3151ff26c94141f6319bde15f4017b9d3d70",
+      "kind": "uups"
+    },
+    {
+      "address": "0x02df3a3F960393F5B349E40A599FEda91a7cc1A7",
+      "txHash": "0xec48f23954dce6221de580a51401827b9ce1631b241de7036089acaac54ab58b",
+      "kind": "uups"
+    },
+    {
+      "address": "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
+      "txHash": "0x4582397977939eaf48d67832ae56c7e5fb5fd29eb50915eafd536d104741cd95",
+      "kind": "uups"
+    },
+    {
       "address": "0xB06c856C8eaBd1d8321b687E188204C1018BC4E5",
-      "txHash": "0x97c0ff2f13bc295d35e1d7ae0f381b693ae59893e10bde315c1cbdc5e414f8a1",
+      "txHash": "0x8efbaa3c938cfdbaa093b9b4a4216990fa34ea24dfc8d1f5876494d5848213a0",
       "kind": "uups"
     }
   ],
   "impls": {
-    "62933591cfdd947a477c859323d4910c7ddc6d56c143973d430e51cace7fdf12": {
+    "ecab1393eeeed3abea7357960850d43a6014a34549422d541bb47298fdc8d738": {
       "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-      "txHash": "0xbbc8fa25a89079152c23aefa971f73200ae1bcd54338fd990fb031b336d7802e",
+      "txHash": "0x9526198021faa3ce25c0065814901e6995a3afaaeb0698ab709077041f3dffd0",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -101,28 +116,44 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:116"
           },
           {
-            "label": "fee",
+            "label": "__gap",
             "offset": 0,
             "slot": "301",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1155ReceiverUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC1155\\utils\\ERC1155ReceiverUpgradeable.sol:31"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "351",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1155HolderUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC1155\\utils\\ERC1155HolderUpgradeable.sol:48"
+          },
+          {
+            "label": "fee",
+            "offset": 0,
+            "slot": "401",
             "type": "t_uint256",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:39"
+            "src": "contracts\\FactoryMarket.sol:41"
           },
           {
             "label": "OrderByHash",
             "offset": 0,
-            "slot": "302",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)3839_storage)",
+            "slot": "402",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)3967_storage)",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:40"
+            "src": "contracts\\FactoryMarket.sol:42"
           },
           {
             "label": "accountAddress",
             "offset": 0,
-            "slot": "303",
+            "slot": "403",
             "type": "t_mapping(t_address,t_address)",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:41"
+            "src": "contracts\\FactoryMarket.sol:43"
           }
         ],
         "types": {
@@ -150,7 +181,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)3821": {
+          "t_enum(OrderType)3949": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -167,7 +198,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)3839_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)3967_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -175,12 +206,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)3839_storage": {
+          "t_struct(OrderInfo)3967_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)3821",
+                "type": "t_enum(OrderType)3949",
                 "offset": 0,
                 "slot": "0"
               },

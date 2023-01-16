@@ -26,7 +26,10 @@ describe("Factory Market", function () {
     const ERC721 = await ethers.getContractFactory("TESTERC721");
     const nft = await ERC721.deploy();
     await nft.deployed();
-    return { market, deployer, addr1, addr2, token, nft };
+    const ERC1155 = await ethers.getContractFactory("TESTERC1155");
+    const collect = await ERC1155.deploy();
+    await collect.deployed();
+    return { market, deployer, addr1, addr2, token, nft, collect };
   }
 
   describe("Creation Account", function () {
@@ -77,7 +80,7 @@ describe("Factory Market", function () {
         deployOneYearLockFixture
       );
       const approveNFT = await nft.connect(deployer).approve(market.address, 1);
-      console.log("1212");
+
       const allowance = await nft.connect(deployer).getApproved(1);
       const hasOr =
         "0x0000000000000000000000000000000000000000000000000000000000000001";
@@ -95,6 +98,35 @@ describe("Factory Market", function () {
       )
         .to.emit(market, "CreatedOrder")
         .withArgs(nft.address, deployer.address, hasOr, 0);
+    });
+    it("Should creat order with ERC1155 token", async function () {
+      const { market, deployer, token, collect } = await loadFixture(
+        deployOneYearLockFixture
+      );
+      const approveNFT = await collect
+        .connect(deployer)
+        .setApprovalForAll(market.address, true);
+
+      const allowance = await collect
+        .connect(deployer)
+        .isApprovedForAll(deployer.address, market.address);
+      expect(allowance).to.equal(true);
+      const hasOr =
+        "0x0000000000000000000000000000000000000000000000000000000000000002";
+      expect(
+        await market.createOrder(
+          1,
+          collect.address,
+          token.address,
+          hasOr,
+          "0x00",
+          BigNumber.from("1000000000000000"),
+          0,
+          100
+        )
+      )
+        .to.emit(market, "CreatedOrder")
+        .withArgs(collect.address, deployer.address, hasOr, 1);
     });
   });
 });
