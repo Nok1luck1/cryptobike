@@ -65,6 +65,7 @@ contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
         address _to,
         uint256 _tokenId
     ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+        require(nft != address(0), "Cant trasnfer 0 from empty address");
         IERC721Upgradeable(nft).safeTransferFrom(address(this), _to, _tokenId);
     }
 
@@ -73,6 +74,11 @@ contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
         address _to,
         uint256 amount
     ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+        require(token != address(0), "Cant trasnfer 0 from empty address");
+        require(
+            IERC20Upgradeable(token).balanceOf(address(this)) >= amount,
+            "not enougth balance"
+        );
         IERC20Upgradeable(token).transfer(_to, amount);
     }
 
@@ -83,6 +89,7 @@ contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
         uint256 amount,
         bytes calldata _data
     ) public onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
+        require(collection != address(0), "Cant trasnfer 0 from empty address");
         require(
             IERC1155Upgradeable(collection).balanceOf(
                 address(this),

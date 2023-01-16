@@ -33,8 +33,9 @@ describe("Factory Market", function () {
         Player.abi,
         createAccountAddress
       );
-      const role = await generatedAcc.FACTORY_ROLE;
-      expect(await generatedAcc.hasRole(deployer.address, role)).to.equal(true);
+      
+      const role = "0x0000000000000000000000000000000000000000000000000000000000000000";
+      expect(await generatedAcc.currentOwner().deep.to.equal(deployer.address));
     });
 
     // it("Should set the right owner", async function () {
