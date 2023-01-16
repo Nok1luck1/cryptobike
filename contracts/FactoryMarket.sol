@@ -154,7 +154,10 @@ contract FactoryMarket is
             order.target = _target;
         } else if (_orderType == OrderType.Account) {
             OrderInfo storage order = OrderByHash[_hashOrder];
-            require(accountAddress[msg.sender] == _target, "CRO4");
+            require(
+                accountAddress[msg.sender] == _target,
+                "Cant sell foreign account"
+            );
             IAccountPlayer(_target).setPause();
             order.target = _target;
             order.amount = 1;
