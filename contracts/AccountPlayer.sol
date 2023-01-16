@@ -27,6 +27,10 @@ contract AccountPlayer is AccessControlUpgradeable, PausableUpgradeable {
         _setupRole(FACTORY_ROLE, msg.sender);
     }
 
+    function currentOwners() public view returns (address) {
+        return currentOwner;
+    }
+
     receive() external payable {}
 
     fallback() external payable {

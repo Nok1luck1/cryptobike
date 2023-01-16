@@ -8,6 +8,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 
 // import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
@@ -60,6 +62,7 @@ contract FactoryMarket is
         bytes32 hashOrder,
         OrderType typeOrder
     );
+    event Withdraw(address withdrawer, address token, uint256 amount);
 
     function initialize(address owner) public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -269,17 +272,27 @@ contract FactoryMarket is
         return sendToSeller;
     }
 
-    function withdrawFee(address token, uint256 _amount)
+    function withdrawFee(address _token, uint256 _amount)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (uint256)
     {
-        IERC20Upgradeable(token).transfer(address(msg.sender), _amount);
+        IERC20Upgradeable(_token).transfer(address(msg.sender), _amount);
+        emit Withdraw(address(msg.sender), _token, _amount);
         return _amount;
     }
 
     function widtrawValue(uint256 _amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
         AddressUpgradeable.sendValue(payable(_msgSender()), _amount);
+    }
+
+    function onERC721Received(
+        address _operator,
+        address _from,
+        uint256 _tokenId,
+        bytes memory _data
+    ) public returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
     function _authorizeUpgrade(address newImplementation)
