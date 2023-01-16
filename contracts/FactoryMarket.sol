@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 import "./AccountPlayer.sol";
+import "./interface/IAccountPlayer.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -60,6 +61,12 @@ contract FactoryMarket is
         bytes32 hashOrder,
         OrderType typeOrder
     );
+    event PaymentSended(
+        address seller,
+        address buyer,
+        address target,
+        uint256 amountToSeller
+    );
     event Withdraw(address withdrawer, address token, uint256 amount);
 
     function initialize(address owner) public initializer {
@@ -71,10 +78,7 @@ contract FactoryMarket is
         __UUPSUpgradeable_init();
     }
 
-    function generateAccount(uint256 accountId)
-        public
-        returns (address createdAccount)
-    {
+    function generateAccount(uint256 accountId) public returns (address) {
         address createdAccount;
         require(
             accountAddress[_msgSender()] == address(0),
@@ -130,6 +134,7 @@ contract FactoryMarket is
             );
             OrderInfo storage order = OrderByHash[_hashOrder];
             order.amount = _amount;
+            order.typeOrder = _orderType;
             order.data = _data;
             order.nftId = _nftID;
             order.paymentToken = _paymentToken;
@@ -147,6 +152,7 @@ contract FactoryMarket is
             OrderInfo storage order = OrderByHash[_hashOrder];
             order.amount = _amount;
             order.data = _data;
+            order.typeOrder = _orderType;
             order.nftId = _nftID;
             order.paymentToken = _paymentToken;
             order.price = _price;
@@ -158,8 +164,13 @@ contract FactoryMarket is
                 accountAddress[msg.sender] == _target,
                 "Cant sell foreign account"
             );
+            require(
+                IAccountPlayer(_target).currentowner() == _msgSender(),
+                "CANAEFVAE"
+            );
             IAccountPlayer(_target).setPause(true);
             order.target = _target;
+            order.typeOrder = _orderType;
             order.amount = 1;
             order.data = _data;
             order.nftId = 0;
@@ -175,61 +186,80 @@ contract FactoryMarket is
         uint256 _amount,
         address receiver
     ) public payable {
-        OrderInfo storage order = OrderByHash[hashOrder];
-        uint256 amountToPayment = order.price * _amount;
-
+        OrderInfo storage _order = OrderByHash[hashOrder];
+        uint256 amountToPayment = _order.price * _amount;
         uint256 amountToSeller = calculateFee(amountToPayment);
         //send payment to seller
-        if (order.paymentToken == address(0)) {
-            AddressUpgradeable.sendValue(payable(order.seller), amountToSeller);
+        if (_order.paymentToken == address(0)) {
+            AddressUpgradeable.sendValue(
+                payable(_order.seller),
+                amountToSeller
+            );
         } else {
-            IERC20Upgradeable(order.paymentToken).transfer(
-                order.seller,
+            IERC20Upgradeable(_order.paymentToken).safeTransferFrom(
+                _msgSender(),
+                address(this),
+                _order.price
+            );
+            IERC20Upgradeable(_order.paymentToken).safeTransfer(
+                _order.seller,
                 amountToSeller
             );
         }
-        if (order.typeOrder == OrderType.ERC721) {
-            IERC721Upgradeable(order.target).safeTransferFrom(
+        emit PaymentSended(
+            _order.seller,
+            _msgSender(),
+            _order.target,
+            amountToSeller
+        );
+        if (_order.typeOrder == OrderType.ERC721) {
+            IERC721Upgradeable(_order.target).safeTransferFrom(
                 address(this),
                 msg.sender,
-                order.nftId,
-                order.data
+                _order.nftId,
+                _order.data
             );
             emit BuyInOrder(
-                order.target,
+                _order.target,
                 _msgSender(),
                 hashOrder,
-                order.typeOrder
+                _order.typeOrder
             );
             delete OrderByHash[hashOrder];
-        }
-        if (order.typeOrder == OrderType.ERC1155) {
-            IERC1155Upgradeable(order.target).safeTransferFrom(
+        } else if (_order.typeOrder == OrderType.ERC1155) {
+            require(_order.amount >= _amount, "Cant buy more than sale");
+            IERC1155Upgradeable(_order.target).safeTransferFrom(
                 address(this),
                 receiver,
-                order.nftId,
+                _order.nftId,
                 _amount,
-                order.data
+                _order.data
             );
-            uint256 newAmount = order.amount - _amount;
-            order.amount = newAmount;
+            uint256 newAmount = _order.amount - _amount;
+            _order.amount = newAmount;
             emit BuyInOrder(
-                order.target,
-                _msgSender(),
+                _order.target,
+                receiver,
                 hashOrder,
-                order.typeOrder
+                _order.typeOrder
             );
-            if (order.amount == 0) {
+            if (_order.amount == 0) {
                 delete OrderByHash[hashOrder];
             }
-        }
-        if (order.typeOrder == OrderType.Account) {
-            IAccountPlayer(order.target).grandRoleNewOwner(_msgSender());
+        } else if (_order.typeOrder == OrderType.Account) {
+            require(
+                accountAddress[_msgSender()] == address(0),
+                "You cant have more accounts"
+            );
+            IAccountPlayer(_order.target).grandRoleNewOwner(_msgSender());
+            delete accountAddress[_order.seller];
+            accountAddress[_msgSender()] = _order.target;
+            IAccountPlayer(_order.target).setPause(false);
             emit BuyInOrder(
-                order.target,
-                _msgSender(),
+                _order.target,
+                receiver,
                 hashOrder,
-                order.typeOrder
+                _order.typeOrder
             );
             delete OrderByHash[hashOrder];
         }
@@ -292,7 +322,7 @@ contract FactoryMarket is
         address _from,
         uint256 _tokenId,
         bytes memory _data
-    ) public returns (bytes4) {
+    ) public pure returns (bytes4) {
         return this.onERC721Received.selector;
     }
 

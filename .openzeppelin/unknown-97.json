@@ -2,15 +2,15 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x4dbab3BfBdf4F5EECA505d1afad32dDa0b875caB",
-      "txHash": "0xdaa74bd2f1670c5bdfdc996b819cece165b37b7bc213f2b4f6b7da8b15c04c9a",
+      "address": "0xAB49D73015811703a04Af81719A23AB1dB09B85d",
+      "txHash": "0x395b7815bdd7a95544f5bdce87095a5769179905f53c8260604985d0b0d5a5f6",
       "kind": "uups"
     }
   ],
   "impls": {
-    "2aa825c1f947759da7fab15a85b439342d7f500b502a8bf0c9f6331d1565cc54": {
-      "address": "0x5509fb6E2c6f3afb818971A23EC4fE60d21C0D76",
-      "txHash": "0xc1db78b37b3a5cc4b86b39138319123d8a965b872dec30fcc18340670c68c0c9",
+    "5d498bcf08da11fa2c0b3621b856beda2dbb167b7269f9a4828cde259e65dc88": {
+      "address": "0x64aBd8aAE2030b6beB555469566599c5eC33F6Ad",
+      "txHash": "0x68382d06692c5fe012d502d4a2e840da7cce69ad4b11f80b67508d9eeff1d69d",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -96,9 +96,25 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:116"
           },
           {
-            "label": "fee",
+            "label": "__gap",
             "offset": 0,
             "slot": "301",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1155ReceiverUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC1155\\utils\\ERC1155ReceiverUpgradeable.sol:31"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "351",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1155HolderUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC1155\\utils\\ERC1155HolderUpgradeable.sol:48"
+          },
+          {
+            "label": "fee",
+            "offset": 0,
+            "slot": "401",
             "type": "t_uint256",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:37"
@@ -106,15 +122,15 @@
           {
             "label": "OrderByHash",
             "offset": 0,
-            "slot": "302",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)6079_storage)",
+            "slot": "402",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)9945_storage)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:38"
           },
           {
             "label": "accountAddress",
             "offset": 0,
-            "slot": "303",
+            "slot": "403",
             "type": "t_mapping(t_address,t_address)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:39"
@@ -145,7 +161,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)6061": {
+          "t_enum(OrderType)9927": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -162,7 +178,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)6079_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)9945_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -170,12 +186,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)6079_storage": {
+          "t_struct(OrderInfo)9945_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)6061",
+                "type": "t_enum(OrderType)9927",
                 "offset": 0,
                 "slot": "0"
               },

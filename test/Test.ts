@@ -47,7 +47,7 @@ describe("Factory Market", function () {
         Player.abi,
         addressGenerated
       );
-      const vavl = await generatedAcc.currentOwners();
+      const vavl = await generatedAcc.currentowner();
       console.log(vavl, "123123123");
       expect(vavl.toLowerCase()).to.equal(addr1.address.toLowerCase());
     });
@@ -136,32 +136,50 @@ describe("Factory Market", function () {
       const generated = await market.accountAddress(addr1.address);
       const hasOr =
         "0x0000000000000000000000000000000000000000000000000000000000000003";
-      const createdOrder = await market
+      expect(
+        await market
+          .connect(addr1)
+          .createOrder(
+            2,
+            generated,
+            token.address,
+            hasOr,
+            "0x00",
+            BigNumber.from("1000000000000000"),
+            0,
+            0
+          )
+      )
+        .to.emit(market, "CreatedOrder")
+        .withArgs(collect.address, deployer.address, hasOr, 2);
+    });
+    it("Should create account sell if and buy from another account", async function () {
+      const { market, deployer, token, collect, addr1, addr2 } =
+        await loadFixture(deployOneYearLockFixture);
+      const value = BigNumber.from("1000000000000000");
+      const value2 = BigNumber.from("1000000000000000000");
+      const createdAccount = await market.connect(addr1).generateAccount(123);
+      const generated = await market.accountAddress(addr1.address);
+      const hasO1r =
+        "0x0000000000000000000000000000000000000000000000000000000000000013";
+      const createAccount = await market
         .connect(addr1)
-        .createOrder(
-          2,
-          generated,
-          token.address,
-          hasOr,
-          "0x00",
-          BigNumber.from("1000000000000000"),
-          0,
-          0
-        );
-      // expect(
-      //   await market.createOrder(
-      //     1,
-      //     collect.address,
-      //     token.address,
-      //     hasOr,
-      //     "0x00",
-      //     BigNumber.from("1000000000000000"),
-      //     0,
-      //     100
-      //   )
-      // )
-      //   .to.emit(market, "CreatedOrder")
-      //   .withArgs(collect.address, deployer.address, hasOr, 1);
+        .createOrder(2, generated, token.address, hasO1r, "0x00", value, 0, 0);
+      const mintAcc2 = await token.connect(addr2).mint(addr2.address, value2);
+      const approveAcc2 = await token
+        .connect(addr2)
+        .approve(market.address, value2);
+      const checkAllowance = await token.allowance(
+        addr2.address,
+        market.address
+      );
+      const balance = await token.balanceOf(addr2.address);
+      const Account = await ethers.getContractAt(Player.abi, generated);
+      const owner1 = await Account.currentowner();
+      expect(await market.connect(addr2).buyFromOrder(hasO1r, 1, addr2.address))
+        .to.emit(market, "BuyInOrder")
+        .withArgs(generated, addr2.address, hasO1r, 2);
+      expect(await Account.currentowner()).to.equal(addr2.address);
     });
   });
 });

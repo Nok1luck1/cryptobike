@@ -2,35 +2,15 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0xAD523115cd35a8d4E60B3C0953E0E0ac10418309",
-      "txHash": "0xff1e8e67b714fe014f0be6bc0fcf4de7174d4295197b456302d621c40ddfd1be",
-      "kind": "uups"
-    },
-    {
-      "address": "0x045857BDEAE7C1c7252d611eB24eB55564198b4C",
-      "txHash": "0x222190a9cf7179013c405853193e3151ff26c94141f6319bde15f4017b9d3d70",
-      "kind": "uups"
-    },
-    {
-      "address": "0x02df3a3F960393F5B349E40A599FEda91a7cc1A7",
-      "txHash": "0xec48f23954dce6221de580a51401827b9ce1631b241de7036089acaac54ab58b",
-      "kind": "uups"
-    },
-    {
-      "address": "0x5133BBdfCCa3Eb4F739D599ee4eC45cBCD0E16c5",
-      "txHash": "0x4582397977939eaf48d67832ae56c7e5fb5fd29eb50915eafd536d104741cd95",
-      "kind": "uups"
-    },
-    {
       "address": "0xB06c856C8eaBd1d8321b687E188204C1018BC4E5",
-      "txHash": "0xc5fcaf6700f6b507dbadaaa44f7dba67051d9339036326ed2da3564e4d919aa4",
+      "txHash": "0x279617ffd95f2805a4e59cbece8a22e8040fde18c05ed152087da445166de14e",
       "kind": "uups"
     }
   ],
   "impls": {
-    "3662cd1eed16d5d521d02aabf893b20d3165d904693701c7612a34989ae5e060": {
+    "aab8e59a7fe197109d54730bc43a15fba15f83e8015d87ffc7710ccdbe20a5a2": {
       "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-      "txHash": "0xdf8ea1ad66d59e0d04b2d7d7b41388c8726ecfd40ef7cddcf935d17ab830fa80",
+      "txHash": "0x1f3aaccf0757387d63638b62dca1b82858431b5432bbe76c8659208e83e34ffc",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -137,15 +117,15 @@
             "slot": "401",
             "type": "t_uint256",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:37"
+            "src": "contracts\\FactoryMarket.sol:38"
           },
           {
             "label": "OrderByHash",
             "offset": 0,
             "slot": "402",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)3967_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)3912_storage)",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:38"
+            "src": "contracts\\FactoryMarket.sol:39"
           },
           {
             "label": "accountAddress",
@@ -153,7 +133,7 @@
             "slot": "403",
             "type": "t_mapping(t_address,t_address)",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:39"
+            "src": "contracts\\FactoryMarket.sol:40"
           }
         ],
         "types": {
@@ -181,7 +161,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)3949": {
+          "t_enum(OrderType)3894": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -198,7 +178,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)3967_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)3912_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -206,12 +186,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)3967_storage": {
+          "t_struct(OrderInfo)3912_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)3949",
+                "type": "t_enum(OrderType)3894",
                 "offset": 0,
                 "slot": "0"
               },
