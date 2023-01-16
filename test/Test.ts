@@ -128,5 +128,40 @@ describe("Factory Market", function () {
         .to.emit(market, "CreatedOrder")
         .withArgs(collect.address, deployer.address, hasOr, 1);
     });
+    it("Should create order with Account", async function () {
+      const { market, deployer, token, collect, addr1 } = await loadFixture(
+        deployOneYearLockFixture
+      );
+      const createdAccount = await market.connect(addr1).generateAccount(123);
+      const generated = await market.accountAddress(addr1.address);
+      const hasOr =
+        "0x0000000000000000000000000000000000000000000000000000000000000003";
+      const createdOrder = await market
+        .connect(addr1)
+        .createOrder(
+          2,
+          generated,
+          token.address,
+          hasOr,
+          "0x00",
+          BigNumber.from("1000000000000000"),
+          0,
+          0
+        );
+      // expect(
+      //   await market.createOrder(
+      //     1,
+      //     collect.address,
+      //     token.address,
+      //     hasOr,
+      //     "0x00",
+      //     BigNumber.from("1000000000000000"),
+      //     0,
+      //     100
+      //   )
+      // )
+      //   .to.emit(market, "CreatedOrder")
+      //   .withArgs(collect.address, deployer.address, hasOr, 1);
+    });
   });
 });
