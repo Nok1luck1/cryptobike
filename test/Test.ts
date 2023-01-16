@@ -140,7 +140,7 @@ describe("Factory Market", function () {
         .connect(addr1)
         .createOrder(
           2,
-          generated.address,
+          generated,
           token.address,
           hasOr,
           "0x00",

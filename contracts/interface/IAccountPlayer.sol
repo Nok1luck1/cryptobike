@@ -8,5 +8,5 @@ interface IAccountPlayer {
 
     function initialize(address owner) external;
 
-    function setPause() external;
+    function setPause(bool status) external;
 }

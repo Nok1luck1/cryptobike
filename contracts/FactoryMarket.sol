@@ -158,7 +158,7 @@ contract FactoryMarket is
                 accountAddress[msg.sender] == _target,
                 "Cant sell foreign account"
             );
-            IAccountPlayer(_target).setPause();
+            IAccountPlayer(_target).setPause(true);
             order.target = _target;
             order.amount = 1;
             order.data = _data;
@@ -254,7 +254,7 @@ contract FactoryMarket is
                 order.data
             );
         } else if (order.typeOrder == OrderType.Account) {
-            IAccountPlayer(order.target).setPause();
+            IAccountPlayer(order.target).setPause(false);
         }
         emit CancelOrder(order.target, msg.sender, hashOrder, order.typeOrder);
         delete OrderByHash[hashOrder];
