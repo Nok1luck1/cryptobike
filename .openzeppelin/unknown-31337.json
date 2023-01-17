@@ -3,14 +3,19 @@
   "proxies": [
     {
       "address": "0xB06c856C8eaBd1d8321b687E188204C1018BC4E5",
-      "txHash": "0x279617ffd95f2805a4e59cbece8a22e8040fde18c05ed152087da445166de14e",
+      "txHash": "0xdc049984d05cfe3623fe2f16a1e87583a98362f7d590556a34a2f76af61a4b22",
+      "kind": "uups"
+    },
+    {
+      "address": "0x02df3a3F960393F5B349E40A599FEda91a7cc1A7",
+      "txHash": "0x6d8970d2d0d6744e107cf9285411580de4ef9524b794b716617d69f640fe1cbc",
       "kind": "uups"
     }
   ],
   "impls": {
-    "aab8e59a7fe197109d54730bc43a15fba15f83e8015d87ffc7710ccdbe20a5a2": {
+    "63896d1f42632e3c2f3b610fe5f60d36beb476b532f47a1fbdb090c28ff57da3": {
       "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-      "txHash": "0x1f3aaccf0757387d63638b62dca1b82858431b5432bbe76c8659208e83e34ffc",
+      "txHash": "0x5a79b55bc9c059cdc1a5e41e6b996821bb9d3f473270e751f67c1cea05ad7f66",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -123,7 +128,7 @@
             "label": "OrderByHash",
             "offset": 0,
             "slot": "402",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)3912_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)4033_storage)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:39"
           },
@@ -134,6 +139,14 @@
             "type": "t_mapping(t_address,t_address)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:40"
+          },
+          {
+            "label": "blockedAccount",
+            "offset": 0,
+            "slot": "404",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "FactoryMarket",
+            "src": "contracts\\FactoryMarket.sol:41"
           }
         ],
         "types": {
@@ -161,7 +174,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)3894": {
+          "t_enum(OrderType)4015": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -178,7 +191,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)3912_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)4033_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -186,12 +199,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)3912_storage": {
+          "t_struct(OrderInfo)4033_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)3894",
+                "type": "t_enum(OrderType)4015",
                 "offset": 0,
                 "slot": "0"
               },

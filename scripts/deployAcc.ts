@@ -7,11 +7,7 @@ async function main() {
   console.log(deployer.address, "deployed address");
   const FactoryMarketContr = await ethers.getContractFactory("AccountPlayer");
 
-  const market = await FactoryMarketContr.deploy(
-    deployer.address,
-
-    112
-  );
+  const market = await FactoryMarketContr.deploy(deployer.address);
   await market.deployed();
   console.log(`Market address : ${market.address}`);
 }

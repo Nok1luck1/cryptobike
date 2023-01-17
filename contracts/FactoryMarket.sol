@@ -38,6 +38,7 @@ contract FactoryMarket is
     uint256 public fee; //1% = 10
     mapping(bytes32 => OrderInfo) public OrderByHash;
     mapping(address => address) public accountAddress;
+    mapping(address => bool) public blockedAccount;
     event CreatedAccount(
         address User,
         address generatedAccount,
@@ -61,6 +62,7 @@ contract FactoryMarket is
         bytes32 hashOrder,
         OrderType typeOrder
     );
+    event BlockedAccount(address owner, address account);
     event PaymentSended(
         address seller,
         address buyer,
@@ -108,6 +110,13 @@ contract FactoryMarket is
         accountAddress[_msgSender()] = createdAccount;
         emit CreatedAccount(_msgSender(), createdAccount, accountId);
         return createdAccount;
+    }
+
+    function blockAccount(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        IAccountPlayer(account).setBlock(true);
+        address owner = accountAddress[account];
+        blockedAccount[account] = true;
+        emit BlockedAccount(owner, account);
     }
 
     function createOrder(
@@ -164,6 +173,7 @@ contract FactoryMarket is
                 accountAddress[msg.sender] == _target,
                 "Cant sell foreign account"
             );
+            require(blockedAccount[_target] != true, "Blocked account");
             require(
                 IAccountPlayer(_target).currentowner() == _msgSender(),
                 "CANAEFVAE"
@@ -247,6 +257,7 @@ contract FactoryMarket is
                 delete OrderByHash[hashOrder];
             }
         } else if (_order.typeOrder == OrderType.Account) {
+            require(blockedAccount[_order.target] != true, "Blocked account");
             require(
                 accountAddress[_msgSender()] == address(0),
                 "You cant have more accounts"
