@@ -34,7 +34,6 @@ contract FactoryMarket is
         uint256 price;
         bytes data;
     }
-    //fee 3%
     uint256 public fee; //1% = 10
     mapping(bytes32 => OrderInfo) public OrderByHash;
     mapping(address => address) public accountAddress;

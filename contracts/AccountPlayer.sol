@@ -17,8 +17,9 @@ contract AccountPlayer is
     using SafeERC20Upgradeable for IERC20Upgradeable;
     bool public isBlackListed;
     address private currentOwner;
-    bytes32 public constant FACTORY_ROLE = keccak256("FACTORY_ROLE");
     address public factory;
+    bytes32 public constant FACTORY_ROLE = keccak256("FACTORY_ROLE");
+
     uint256 public UserID;
 
     constructor() {
