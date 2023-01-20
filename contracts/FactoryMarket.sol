@@ -118,6 +118,10 @@ contract FactoryMarket is
         emit BlockedAccount(owner, account);
     }
 
+    function userHasAccount(address _user) public view returns (address) {
+        return accountAddress[_user];
+    }
+
     function createOrder(
         OrderType _orderType,
         address _target,

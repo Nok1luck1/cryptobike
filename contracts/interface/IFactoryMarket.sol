@@ -1,24 +1,25 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
+enum OrderType {
+    ERC721,
+    ERC1155,
+    Account
+}
+struct OrderInfo {
+    OrderType typeOrder;
+    address target;
+    address paymentToken;
+    address seller;
+    uint256 nftId;
+    uint256 amount;
+    uint256 price;
+    bytes data;
+}
 
 interface IFactoryMarket {
-    enum OrderType {
-        ERC721,
-        ERC1155,
-        Account
-    }
-    struct OrderInfo {
-        OrderType typeOrder;
-        address target;
-        address paymentToken;
-        address seller;
-        uint256 nftId;
-        uint256 amount;
-        uint256 price;
-        bytes data;
-    }
-
     function accountAddress(address user) external returns (address account);
+
+    function userHasAccount(address user) external returns (address account);
 
     function createOrder(
         OrderType _orderType,

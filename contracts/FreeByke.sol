@@ -8,93 +8,65 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./interface/IFactoryMarket.sol";
 
-contract NftBikes is ERC721URIStorage, AccessControl {
+contract FreeByke is ERC721URIStorage, AccessControl {
     using Counters for Counters.Counter;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     string public url;
+    address public factory;
     Counters.Counter public _globalCounter;
 
     mapping(address => bool) public userMinted;
-    mapping(uint256 => string) private _tokenURIs;
-    //mapping(uint256 => BikeType) public nftList;
-    // struct BikeType {
-    //     Counters.Counter counter;
-    //     uint256 limit;
-    //     uint256 price;
-    // }
-    //
 
-    event Minted(uint256 _bikeType, uint256 _tokenId, address _to);
-
-    constructor(
-        string memory name,
-        string memory symbol,
-        string memory _url
-    ) ERC721(name, symbol) {
+    constructor(string memory _url) ERC721("FReeByke", "CFB") {
+        factory = 0xB06c856C8eaBd1d8321b687E188204C1018BC4E5;
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         url = _url;
     }
 
-    function freeMint(uint256 _bikeType) public {
+    function freeMint() public {
         require(userMinted[msg.sender] == false, "Cant mint more");
+        require(balanceOf(address(this)) == 0, "You already have free byke");
         _safeMint(msg.sender, _globalCounter.current());
         _globalCounter.increment();
-        //nftList[_bikeType].counter.increment();
-        uint256 newItemId = _globalCounter.current();
-        string memory newId = Strings.toString(newItemId);
-        string memory link = string(
-            bytes.concat(
-                bytes(url),
-                bytes(Strings.toString(_bikeType)),
-                "/",
-                bytes(newId)
-            )
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override {
+        require(
+            IFactoryMarket(factory).userHasAccount(msg.sender) != address(0)
         );
-
-        _safeMint(msg.sender, _globalCounter.current());
-        _setTokenURI(_globalCounter.current(), link);
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
+        );
+        _transfer(from, to, tokenId);
     }
 
-    // function mint(address _to, uint256 _bikeType) public onlyRole(MINTER_ROLE) {
-    //     require(nftList[_bikeType].price > 0, "This bike type can`t be minted");
-    //     if (nftList[_bikeType].limit > 0) {
-    //         require(
-    //             nftList[_bikeType].counter.current() < nftList[_bikeType].limit,
-    //             "The limit for this bike type has been reached."
-    //         );
-    //     }
-    //
-    //     _globalCounter.increment();
-    //     uint256 newItemId = _globalCounter.current();
-    //     string memory newId = Strings.toString(newItemId);
-    //     string memory link = string(
-    //         bytes.concat(
-    //             bytes(url),
-    //             bytes(Strings.toString(_bikeType)),
-    //             "/",
-    //             bytes(newId)
-    //         )
-    //     );
-
-    //     _safeMint(_to, _globalCounter.current());
-    //     _setTokenURI(_globalCounter.current(), link);
-    //     emit Minted(_bikeType, _globalCounter.current(), _to);
-    // }
-
-    function setMinters(address _minter, address _contract)
-        public
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        grantRole(MINTER_ROLE, _minter);
-        grantRole(MINTER_ROLE, _contract);
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public virtual override {
+        require(
+            IFactoryMarket(factory).userHasAccount(msg.sender) != address(0)
+        );
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
+        );
+        _safeTransfer(from, to, tokenId, data);
     }
 
-    function addMinter(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(MINTER_ROLE, _minter);
-    }
-
-    function removeMinter(address _minter) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(MINTER_ROLE, _minter);
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override {
+        safeTransferFrom(from, to, tokenId, "");
     }
 
     function setUrl(string memory _url) public onlyRole(DEFAULT_ADMIN_ROLE) {

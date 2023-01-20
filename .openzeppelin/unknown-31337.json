@@ -3,19 +3,19 @@
   "proxies": [
     {
       "address": "0xB06c856C8eaBd1d8321b687E188204C1018BC4E5",
-      "txHash": "0xdc049984d05cfe3623fe2f16a1e87583a98362f7d590556a34a2f76af61a4b22",
+      "txHash": "0xde06eddab1bf8aef05b090e42cdba94f927605d0b252a53d409e6ca616549cab",
       "kind": "uups"
     },
     {
       "address": "0x02df3a3F960393F5B349E40A599FEda91a7cc1A7",
-      "txHash": "0x6d8970d2d0d6744e107cf9285411580de4ef9524b794b716617d69f640fe1cbc",
+      "txHash": "0xb5676f07ef57dec685a30887c5eb9f92ed36d436f78d05f5202f6855c3fdb4fd",
       "kind": "uups"
     }
   ],
   "impls": {
-    "eb147442b3e199400ad49255d94c77f2c066d15d881dc5e0355d3c3473aefa12": {
+    "78ac1dc0e5a5c7e753011d7485a68b13dee2a565edf811d8620fdb2d07e5a90d": {
       "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
-      "txHash": "0xe8cb5efebb277bcb782fbcd138cfecdd5e4e73d8786641dbc3a8841a6e65d817",
+      "txHash": "0x0db4140c318d25864717545279ac03977f80cf0c279df3e37efd222170ecebbe",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -128,7 +128,7 @@
             "label": "OrderByHash",
             "offset": 0,
             "slot": "402",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)4033_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)7155_storage)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:38"
           },
@@ -174,7 +174,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)4015": {
+          "t_enum(OrderType)7137": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -191,7 +191,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)4033_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)7155_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -199,12 +199,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)4033_storage": {
+          "t_struct(OrderInfo)7155_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)4015",
+                "type": "t_enum(OrderType)7137",
                 "offset": 0,
                 "slot": "0"
               },
