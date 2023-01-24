@@ -5,13 +5,15 @@ const hre = require("hardhat");
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log(deployer.address, "deployed address");
-  const FactoryMarketContr = await ethers.getContractFactory("FreeByke");
+  const FactoryMarketContr = await ethers.getContractFactory("FreeCollection");
 
-  const market = await FactoryMarketContr.deploy(
-    "https://bafybeid3w4wyq7lhabndmllpqs34wak5jk5vittkuexzl35bxr5nwgcdde.ipfs.nftstorage.link/"
-  );
-  await market.deployed();
-  console.log(`Market address : ${market.address}`);
+  const collection = await FactoryMarketContr.deploy();
+  await collection.deployed();
+  console.log(`collection address : ${collection.address}`);
+  const mintED = await collection.freeMint();
+  console.log(mintED);
+  const mintED1 = await collection.freeMint();
+  console.log(mintED1);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

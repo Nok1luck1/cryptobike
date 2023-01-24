@@ -5,24 +5,30 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 
-contract Collection is ERC1155, AccessControl, ERC1155URIStorage {
+contract FreeCollection is ERC1155, AccessControl, ERC1155URIStorage {
     mapping(address => mapping(uint256 => bool)) public userMinted;
     uint256 public freeAccessID;
 
-    constructor(string memory url) ERC1155("") {
+    constructor(uint256 id, string memory url) ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setBaseURI(url);
-        mint(msg.sender, 0, 1, "");
+        setURI(id, url);
+    }
+
+    function setURI(uint256 id, string memory urL)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        _setURI(id, urL);
+    }
+
+    function setNewFreeItem(uint256 id) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        freeAccessID = id;
     }
 
     function freeMint() public {
         require(
             userMinted[msg.sender][freeAccessID] == false,
             "Cant mint more"
-        );
-        require(
-            balanceOf(address(this), freeAccessID) == 0,
-            "You already have free byke"
         );
         _mint(msg.sender, freeAccessID, 1, "");
     }
@@ -31,10 +37,10 @@ contract Collection is ERC1155, AccessControl, ERC1155URIStorage {
         address _to,
         uint256 _tokenId,
         uint256 _amount,
+        string memory urL,
         bytes memory _data
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        string memory urL = abi.decode(_data, (string));
-        _setURI(_tokenId, urL);
+        setURI(_tokenId, urL);
         _mint(_to, _tokenId, _amount, _data);
     }
 

@@ -128,7 +128,7 @@
             "label": "OrderByHash",
             "offset": 0,
             "slot": "402",
-            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)7155_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)10076_storage)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:38"
           },
@@ -174,7 +174,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(OrderType)7137": {
+          "t_enum(OrderType)10058": {
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -191,7 +191,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(OrderInfo)7155_storage)": {
+          "t_mapping(t_bytes32,t_struct(OrderInfo)10076_storage)": {
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -199,12 +199,12 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_struct(OrderInfo)7155_storage": {
+          "t_struct(OrderInfo)10076_storage": {
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
-                "type": "t_enum(OrderType)7137",
+                "type": "t_enum(OrderType)10058",
                 "offset": 0,
                 "slot": "0"
               },
