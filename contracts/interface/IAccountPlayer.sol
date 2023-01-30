@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.17;
+pragma solidity ^0.8.0;
 
 interface IAccountPlayer {
-    function setBlock() external;
+    function setBlock(bool status) external;
 
     function grandRoleNewOwner(address newOwner) external;
 

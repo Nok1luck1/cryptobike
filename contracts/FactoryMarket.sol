@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.17;
+pragma solidity ^0.8.0;
 import "./AccountPlayer.sol";
 import "./interface/IAccountPlayer.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
@@ -34,10 +34,10 @@ contract FactoryMarket is
         uint256 price;
         bytes data;
     }
-    //fee 3%
     uint256 public fee; //1% = 10
     mapping(bytes32 => OrderInfo) public OrderByHash;
     mapping(address => address) public accountAddress;
+    mapping(address => bool) public blockedAccount;
     event CreatedAccount(
         address User,
         address generatedAccount,
@@ -61,6 +61,7 @@ contract FactoryMarket is
         bytes32 hashOrder,
         OrderType typeOrder
     );
+    event BlockedAccount(address owner, address account);
     event PaymentSended(
         address seller,
         address buyer,
@@ -78,7 +79,26 @@ contract FactoryMarket is
         __UUPSUpgradeable_init();
     }
 
-    function generateAccount(uint256 accountId) public returns (address) {
+    // IERC721Upgradeable(addrERC721[i]).setApprovalForAll(
+    //     createdAccount,
+    //     true
+    // );
+
+    // (bool success, bytes memory data) = addrERC721[i].call(
+    //     abi.encodeWithSignature(
+    //         "transferFrom(address,address,uint",
+    //         _msgSender(),
+    //         createdAccount,
+    //         id721[i]
+    //     )
+    // );
+    // uint256[] calldata id1155,
+    //     address erc1155
+    function generateAccount(
+        uint256 accountId,
+        uint256[] calldata id721,
+        address[] calldata addrERC721
+    ) public returns (address) {
         address createdAccount;
         require(
             accountAddress[_msgSender()] == address(0),
@@ -104,10 +124,42 @@ contract FactoryMarket is
             createdAccount != address(0),
             "Create2: Failed to create Account"
         );
+
         IAccountPlayer(createdAccount).initialize(_msgSender());
         accountAddress[_msgSender()] = createdAccount;
+        for (uint256 i = 0; i < id721.length; i++) {
+            require(
+                IERC721Upgradeable(addrERC721[i]).ownerOf(id721[i]) ==
+                    _msgSender(),
+                "Caller not owner"
+            );
+
+            IERC721Upgradeable(addrERC721[i]).safeTransferFrom(
+                _msgSender(),
+                address(this),
+                id721[i],
+                ""
+            );
+            IERC721Upgradeable(addrERC721[i]).safeTransferFrom(
+                address(this),
+                createdAccount,
+                id721[i],
+                ""
+            );
+        }
         emit CreatedAccount(_msgSender(), createdAccount, accountId);
         return createdAccount;
+    }
+
+    function blockAccount(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        IAccountPlayer(account).setBlock(true);
+        address owner = accountAddress[account];
+        blockedAccount[account] = true;
+        emit BlockedAccount(owner, account);
+    }
+
+    function userHasAccount(address _user) public view returns (address) {
+        return accountAddress[_user];
     }
 
     function createOrder(
@@ -164,6 +216,7 @@ contract FactoryMarket is
                 accountAddress[msg.sender] == _target,
                 "Cant sell foreign account"
             );
+            require(blockedAccount[_target] != true, "Blocked account");
             require(
                 IAccountPlayer(_target).currentowner() == _msgSender(),
                 "CANAEFVAE"
@@ -247,6 +300,7 @@ contract FactoryMarket is
                 delete OrderByHash[hashOrder];
             }
         } else if (_order.typeOrder == OrderType.Account) {
+            require(blockedAccount[_order.target] != true, "Blocked account");
             require(
                 accountAddress[_msgSender()] == address(0),
                 "You cant have more accounts"
@@ -264,6 +318,14 @@ contract FactoryMarket is
             delete OrderByHash[hashOrder];
         }
     }
+
+    // function is721(address _nft) private view returns (bool) {
+    //     return IERC165(_nft).supportsInterface(type(IERC721).interfaceId);
+    // }
+
+    // function is1155(address _nft) private view returns (bool) {
+    //     return IERC165(_nft).supportsInterface(type(IERC1155).interfaceId);
+    // }
 
     function cancelOrder(bytes32 hashOrder, address receiveTarget) public {
         OrderInfo storage order = OrderByHash[hashOrder];

