@@ -1,5 +1,9 @@
 //SPDX-License-Identifier: UNLICENSED
+<<<<<<< HEAD
 pragma solidity ^0.8.0;
+=======
+pragma solidity 0.8.17;
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
 enum OrderType {
     ERC721,
     ERC1155,

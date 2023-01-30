@@ -33,9 +33,13 @@ describe("Account Generated Test", function () {
     const value = BigNumber.from("1000000000000000");
     const value2 = BigNumber.from("1000000000000000000");
 
+<<<<<<< HEAD
     const createAcc = await market
       .connect(deployer)
       .generateAccount(123123, [], []);
+=======
+    const createAcc = await market.connect(deployer).generateAccount(123123);
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
 
     const AddresAcc = await market.accountAddress(deployer.address);
 

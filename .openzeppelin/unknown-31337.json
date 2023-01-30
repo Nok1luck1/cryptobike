@@ -3,19 +3,33 @@
   "proxies": [
     {
       "address": "0xB06c856C8eaBd1d8321b687E188204C1018BC4E5",
+<<<<<<< HEAD
       "txHash": "0xdc049984d05cfe3623fe2f16a1e87583a98362f7d590556a34a2f76af61a4b22",
+=======
+      "txHash": "0xde06eddab1bf8aef05b090e42cdba94f927605d0b252a53d409e6ca616549cab",
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
       "kind": "uups"
     },
     {
       "address": "0x02df3a3F960393F5B349E40A599FEda91a7cc1A7",
+<<<<<<< HEAD
       "txHash": "0x6d8970d2d0d6744e107cf9285411580de4ef9524b794b716617d69f640fe1cbc",
+=======
+      "txHash": "0xb5676f07ef57dec685a30887c5eb9f92ed36d436f78d05f5202f6855c3fdb4fd",
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
       "kind": "uups"
     }
   ],
   "impls": {
+<<<<<<< HEAD
     "63896d1f42632e3c2f3b610fe5f60d36beb476b532f47a1fbdb090c28ff57da3": {
       "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
       "txHash": "0x5a79b55bc9c059cdc1a5e41e6b996821bb9d3f473270e751f67c1cea05ad7f66",
+=======
+    "78ac1dc0e5a5c7e753011d7485a68b13dee2a565edf811d8620fdb2d07e5a90d": {
+      "address": "0xddE78e6202518FF4936b5302cC2891ec180E8bFf",
+      "txHash": "0x0db4140c318d25864717545279ac03977f80cf0c279df3e37efd222170ecebbe",
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -122,21 +136,33 @@
             "slot": "401",
             "type": "t_uint256",
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:38"
+            "src": "contracts\\FactoryMarket.sol:37"
           },
           {
             "label": "OrderByHash",
             "offset": 0,
             "slot": "402",
+<<<<<<< HEAD
             "type": "t_mapping(t_bytes32,t_struct(OrderInfo)4033_storage)",
+=======
+            "type": "t_mapping(t_bytes32,t_struct(OrderInfo)10076_storage)",
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
             "contract": "FactoryMarket",
-            "src": "contracts\\FactoryMarket.sol:39"
+            "src": "contracts\\FactoryMarket.sol:38"
           },
           {
             "label": "accountAddress",
             "offset": 0,
             "slot": "403",
             "type": "t_mapping(t_address,t_address)",
+            "contract": "FactoryMarket",
+            "src": "contracts\\FactoryMarket.sol:39"
+          },
+          {
+            "label": "blockedAccount",
+            "offset": 0,
+            "slot": "404",
+            "type": "t_mapping(t_address,t_bool)",
             "contract": "FactoryMarket",
             "src": "contracts\\FactoryMarket.sol:40"
           },
@@ -174,7 +200,11 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
+<<<<<<< HEAD
           "t_enum(OrderType)4015": {
+=======
+          "t_enum(OrderType)10058": {
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
             "label": "enum FactoryMarket.OrderType",
             "members": [
               "ERC721",
@@ -191,7 +221,11 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
+<<<<<<< HEAD
           "t_mapping(t_bytes32,t_struct(OrderInfo)4033_storage)": {
+=======
+          "t_mapping(t_bytes32,t_struct(OrderInfo)10076_storage)": {
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
             "label": "mapping(bytes32 => struct FactoryMarket.OrderInfo)",
             "numberOfBytes": "32"
           },
@@ -199,12 +233,20 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
+<<<<<<< HEAD
           "t_struct(OrderInfo)4033_storage": {
+=======
+          "t_struct(OrderInfo)10076_storage": {
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
             "label": "struct FactoryMarket.OrderInfo",
             "members": [
               {
                 "label": "typeOrder",
+<<<<<<< HEAD
                 "type": "t_enum(OrderType)4015",
+=======
+                "type": "t_enum(OrderType)10058",
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
                 "offset": 0,
                 "slot": "0"
               },

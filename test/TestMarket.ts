@@ -221,6 +221,7 @@ describe("Factory Market", function () {
         .to.emit(market, "BuyInOrder")
         .withArgs(nft.address, addr2.address, hasOr, 0);
     });
+<<<<<<< HEAD:test/TestMarket.ts
     it("Should transfer all nft when generate account", async function () {
       const { market, deployer, token, nft, addr2, value2 } = await loadFixture(
         deployOneYearLockFixture
@@ -244,5 +245,7 @@ describe("Factory Market", function () {
       const baalnce = await nft.balanceOf(genacc);
       console.log(baalnce);
     });
+=======
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041:test/Test.ts
   });
 });

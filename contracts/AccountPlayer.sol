@@ -1,5 +1,9 @@
 //SPDX-License-Identifier: UNLICENSED
+<<<<<<< HEAD
 pragma solidity ^0.8.0;
+=======
+pragma solidity 0.8.17;
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
 import "./interface/IFactoryMarket.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/utils/ERC721HolderUpgradeable.sol";
@@ -12,8 +16,12 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 contract AccountPlayer is
     AccessControlUpgradeable,
     PausableUpgradeable,
+<<<<<<< HEAD
     ERC1155HolderUpgradeable,
     ERC721HolderUpgradeable
+=======
+    ERC1155HolderUpgradeable
+>>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     bool public isBlackListed;
