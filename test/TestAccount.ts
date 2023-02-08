@@ -1,24 +1,19 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-// import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
 
 const { upgrades, ethers } = require("hardhat");
-import Player from "../artifacts/contracts/AccountPlayer.sol/AccountPlayer.json";
-import { AccountFactory__factory } from "../typechain-types/factories/contracts/AccountFactory__factory";
+import Player from "../artifacts/contracts/Account721.sol/Account721.json";
+//import { AccountFactory__factory } from "../typechain-types/factories/contracts/AccountFactory__factory";
 //import Token from "../artifacts/contracts/test/ERC20.sol/TEST.json";
-describe("Account Generated Test", function () {
+describe("Account Test", function () {
   async function deployOneYearLockFixture() {
     const [deployer, addr1, addr2] = await ethers.getSigners();
     console.log(deployer.address, "deployer address");
-    const FactoryMarketContr = await ethers.getContractFactory("FactoryMarket");
-    const initValue = [
-      deployer.address, //must be owner
-    ];
-    const market = await upgrades.deployProxy(FactoryMarketContr, initValue, {
-      initializer: "initialize",
-      kind: "uups",
-    });
+    const FactoryMarketContr = await ethers.getContractFactory(
+      "FactoryMarketNonProx"
+    );
+    const market = await FactoryMarketContr.deploy();
     await market.deployed();
     console.log(`Market address : ${market.address}`);
     const Token = await ethers.getContractFactory("TEST");
@@ -33,13 +28,9 @@ describe("Account Generated Test", function () {
     const value = BigNumber.from("1000000000000000");
     const value2 = BigNumber.from("1000000000000000000");
 
-<<<<<<< HEAD
     const createAcc = await market
       .connect(deployer)
       .generateAccount(123123, [], []);
-=======
-    const createAcc = await market.connect(deployer).generateAccount(123123);
->>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041
 
     const AddresAcc = await market.accountAddress(deployer.address);
 
@@ -60,21 +51,16 @@ describe("Account Generated Test", function () {
 
   describe("Creation Account", function () {
     it("Should accept ERC721", async function () {
-      const { deployer, AddresAcc, nft } = await loadFixture(
+      const { deployer, AddresAcc, nft, Account } = await loadFixture(
         deployOneYearLockFixture
       );
-
       const balance = await nft.balanceOf(deployer.address);
-
       const approveNFT = await nft.connect(deployer).approve(AddresAcc, 1);
-
       const allowance = await nft.connect(deployer).getApproved(1);
-
       const transfer = await nft
         .connect(deployer)
         .transferFrom(deployer.address, AddresAcc, 1);
-
-      expect(await nft.balanceOf(AddresAcc)).to.equal(1);
+      expect(await nft.balanceOf(Account.address)).to.equal(1);
     });
     it("Should accept ERC721 and transfer Out", async function () {
       const { deployer, AddresAcc, Account, nft } = await loadFixture(
@@ -86,13 +72,13 @@ describe("Account Generated Test", function () {
       const approveNFT = await nft.connect(deployer).approve(AddresAcc, 1);
 
       const allowance = await nft.connect(deployer).getApproved(1);
-
+      console.log(allowance);
       const transfer = await nft
         .connect(deployer)
         .transferFrom(deployer.address, AddresAcc, 1);
 
       expect(await nft.balanceOf(AddresAcc)).to.equal(1);
-      const transferOut = await Account.withdrawNFT(
+      const transferOut = await Account.connect(deployer).withdraw721(
         nft.address,
         deployer.address,
         1
@@ -113,7 +99,7 @@ describe("Account Generated Test", function () {
       const allowance = await collect
         .connect(deployer)
         .isApprovedForAll(deployer.address, AddresAcc);
-
+      console.log(allowance);
       const transfer = await collect
         .connect(deployer)
         .safeTransferFrom(deployer.address, AddresAcc, 0, 10, "0x00");
@@ -133,14 +119,14 @@ describe("Account Generated Test", function () {
       const allowance = await collect
         .connect(deployer)
         .isApprovedForAll(deployer.address, AddresAcc);
-
+      console.log(allowance);
       const transfer = await collect
         .connect(deployer)
         .safeTransferFrom(deployer.address, AddresAcc, 0, 10, "0x00");
 
       expect(await collect.balanceOf(AddresAcc, 0)).to.equal(10);
 
-      const transferOut = await Account.witdhrawCollection(
+      const transferOut = await Account.witdhraw1155(
         collect.address,
         deployer.address,
         0,

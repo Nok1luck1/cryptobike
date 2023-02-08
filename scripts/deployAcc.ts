@@ -5,9 +5,9 @@ const hre = require("hardhat");
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log(deployer.address, "deployed address");
-  const FactoryMarketContr = await ethers.getContractFactory("AccountPlayer");
+  const FactoryMarketContr = await ethers.getContractFactory("Account721");
 
-  const market = await FactoryMarketContr.deploy(deployer.address);
+  const market = await FactoryMarketContr.deploy();
   await market.deployed();
   console.log(`Market address : ${market.address}`);
 }

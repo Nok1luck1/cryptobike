@@ -1,23 +1,17 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-// import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
 
 const { upgrades, ethers } = require("hardhat");
-import Player from "../artifacts/contracts/AccountPlayer.sol/AccountPlayer.json";
-//import Token from "../artifacts/contracts/test/ERC20.sol/TEST.json";
+import Player from "../artifacts/contracts/Account721.sol/Account721.json";
 describe("Factory Market", function () {
   async function deployOneYearLockFixture() {
     const [deployer, addr1, addr2] = await ethers.getSigners();
     console.log(deployer.address, "deployer address");
-    const FactoryMarketContr = await ethers.getContractFactory("FactoryMarket");
-    const initValue = [
-      deployer.address, //must be owner
-    ];
-    const market = await upgrades.deployProxy(FactoryMarketContr, initValue, {
-      initializer: "initialize",
-      kind: "uups",
-    });
+    const FactoryMarketContr = await ethers.getContractFactory(
+      "FactoryMarketNonProx"
+    );
+    const market = await FactoryMarketContr.deploy();
     await market.deployed();
     console.log(`Market address : ${market.address}`);
     const Token = await ethers.getContractFactory("TEST");
@@ -41,16 +35,15 @@ describe("Factory Market", function () {
       );
 
       const createAccountAddress = await market
-        .connect(addr1)
+        .connect(deployer)
         .generateAccount(123, [], []);
-      const addressGenerated = await market.accountAddress(addr1.address);
+      const addressGenerated = await market.accountAddress(deployer.address);
       const generatedAcc = await ethers.getContractAt(
         Player.abi,
         addressGenerated
       );
       const vavl = await generatedAcc.currentowner();
-
-      expect(vavl.toLowerCase()).to.equal(addr1.address.toLowerCase());
+      expect(vavl.toLowerCase()).to.equal(deployer.address.toLowerCase());
     });
 
     it("Should transfer token from marketplace", async function () {
@@ -136,26 +129,28 @@ describe("Factory Market", function () {
         .connect(addr1)
         .generateAccount(123, [], []);
       const generated = await market.accountAddress(addr1.address);
+      const acc = await ethers.getContractAt(Player.abi, generated);
+      const appr = await acc.connect(addr1).approve(market.address, 123);
       const hasOr =
         "0x0000000000000000000000000000000000000000000000000000000000000003";
       expect(
         await market
           .connect(addr1)
           .createOrder(
-            2,
+            0,
             generated,
             token.address,
             hasOr,
             "0x00",
             BigNumber.from("1000000000000000"),
-            0,
+            123,
             0
           )
       )
         .to.emit(market, "CreatedOrder")
-        .withArgs(collect.address, deployer.address, hasOr, 2);
+        .withArgs(collect.address, addr1.address, hasOr, 0);
     });
-    it("Should create account sell if and buy from another account", async function () {
+    it("Should create account sell it, and buy from another account", async function () {
       const { market, deployer, token, collect, addr1, addr2 } =
         await loadFixture(deployOneYearLockFixture);
       const value = BigNumber.from("1000000000000000");
@@ -166,9 +161,20 @@ describe("Factory Market", function () {
       const generated = await market.accountAddress(addr1.address);
       const hasO1r =
         "0x0000000000000000000000000000000000000000000000000000000000000013";
+      const Acc = await ethers.getContractAt(Player.abi, generated);
+      const approve = await Acc.connect(addr1).approve(market.address, 123);
       const createAccount = await market
         .connect(addr1)
-        .createOrder(2, generated, token.address, hasO1r, "0x00", value, 0, 0);
+        .createOrder(
+          0,
+          generated,
+          token.address,
+          hasO1r,
+          "0x00",
+          value,
+          123,
+          0
+        );
       const mintAcc2 = await token.connect(addr2).mint(addr2.address, value2);
       const approveAcc2 = await token
         .connect(addr2)
@@ -221,7 +227,6 @@ describe("Factory Market", function () {
         .to.emit(market, "BuyInOrder")
         .withArgs(nft.address, addr2.address, hasOr, 0);
     });
-<<<<<<< HEAD:test/TestMarket.ts
     it("Should transfer all nft when generate account", async function () {
       const { market, deployer, token, nft, addr2, value2 } = await loadFixture(
         deployOneYearLockFixture
@@ -230,8 +235,7 @@ describe("Factory Market", function () {
       const mint = await nft.connect(deployer).mint(deployer.address, 0);
       const mint1 = await nft.mint(deployer.address, 3);
       const mint2 = await nft.mint(deployer.address, 2);
-      // const approve = await nft.connect(deployer).approve(market.address, 0);
-      // const approve1 = await nft.approve(market.address, 3);
+
       const approve2 = await nft.setApprovalForAll(market.address, true);
       const gen = await market
         .connect(deployer)
@@ -242,10 +246,7 @@ describe("Factory Market", function () {
         );
       const genacc = await market.accountAddress(deployer.address);
 
-      const baalnce = await nft.balanceOf(genacc);
-      console.log(baalnce);
+      expect(await nft.balanceOf(genacc)).to.equal(3);
     });
-=======
->>>>>>> 531b888dd12c83034dacc7e23a8f7ed4ae8d4041:test/Test.ts
   });
 });

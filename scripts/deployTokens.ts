@@ -1,22 +1,20 @@
-const Zakhar= "0x5C5193544Fce3f8407668D451b20990303cc692a";
-import { ethers, upgrades } from "hardhat";
+const Zakhar = "0x5C5193544Fce3f8407668D451b20990303cc692a";
+import { ethers } from "hardhat";
 const hre = require("hardhat");
 
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log(deployer.address, "deployeR address");
   const FactoryMarketContr = await ethers.getContractFactory("TEST");
-//   const initValue = [
-//     deployer.address, //must be owner
-//   ];
-const token = await ethers.getContractFactory("MTCBToken")
-const deployTok = await token.deploy();
-await deployTok.deployed();
 
-console.log(deployTok.address)
+  const token = await ethers.getContractFactory("MTCBToken");
+  const deployTok = await token.deploy();
+  await deployTok.deployed();
+
+  console.log(deployTok.address);
   const market = await FactoryMarketContr.deploy();
   await market.deployed();
-  await market.mint(Zakhar,"100000000000000000000")
+  await market.mint(Zakhar, "100000000000000000000");
   console.log(`Market address : ${market.address}`);
 }
 

@@ -1,39 +1,17 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
-import "./AccountPlayer.sol";
+import "./Account721.sol";
 import "./interface/IAccountPlayer.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
-contract FactoryMarket is
-    Initializable,
-    UUPSUpgradeable,
-    AccessControlUpgradeable,
-    PausableUpgradeable,
-    ERC1155HolderUpgradeable
+contract FactoryMarketNonProx is
+    AccessControl,
+    Pausable,
+    ERC1155Holder,
+    ERC721Holder
 {
-    using SafeERC20Upgradeable for IERC20Upgradeable;
-    enum OrderType {
-        ERC721,
-        ERC1155,
-        Account
-    }
-    struct OrderInfo {
-        OrderType typeOrder;
-        address target;
-        address paymentToken;
-        address seller;
-        uint256 nftId;
-        uint256 amount;
-        uint256 price;
-        bytes data;
-    }
+    using SafeERC20 for IERC20;
+
     uint256 public fee; //1% = 10
     mapping(bytes32 => OrderInfo) public OrderByHash;
     mapping(address => address) public accountAddress;
@@ -70,30 +48,12 @@ contract FactoryMarket is
     );
     event Withdraw(address withdrawer, address token, uint256 amount);
 
-    function initialize(address owner) public initializer {
+    constructor() {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        grantRole(DEFAULT_ADMIN_ROLE, owner);
+        grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         fee = 30;
-        __Pausable_init();
-        __AccessControl_init();
-        __UUPSUpgradeable_init();
     }
 
-    // IERC721Upgradeable(addrERC721[i]).setApprovalForAll(
-    //     createdAccount,
-    //     true
-    // );
-
-    // (bool success, bytes memory data) = addrERC721[i].call(
-    //     abi.encodeWithSignature(
-    //         "transferFrom(address,address,uint",
-    //         _msgSender(),
-    //         createdAccount,
-    //         id721[i]
-    //     )
-    // );
-    // uint256[] calldata id1155,
-    //     address erc1155
     function generateAccount(
         uint256 accountId,
         uint256[] calldata id721,
@@ -101,10 +61,10 @@ contract FactoryMarket is
     ) public returns (address) {
         address createdAccount;
         require(
-            accountAddress[_msgSender()] == address(0),
+            userHasAccount(_msgSender()) == address(0),
             "You cant Create more accounts"
         );
-        bytes memory bytecodeAccount = type(AccountPlayer).creationCode;
+        bytes memory bytecodeAccount = type(Account721).creationCode;
         require(
             bytecodeAccount.length != 0,
             "Create2: bytecode length is zero"
@@ -120,27 +80,21 @@ contract FactoryMarket is
                 )
             }
         }
+
         require(
             createdAccount != address(0),
             "Create2: Failed to create Account"
         );
-
-        IAccountPlayer(createdAccount).initialize(_msgSender());
+        IAccountPlayer(createdAccount).initialize(_msgSender(), accountId);
         accountAddress[_msgSender()] = createdAccount;
         for (uint256 i = 0; i < id721.length; i++) {
-            require(
-                IERC721Upgradeable(addrERC721[i]).ownerOf(id721[i]) ==
-                    _msgSender(),
-                "Caller not owner"
-            );
-
-            IERC721Upgradeable(addrERC721[i]).safeTransferFrom(
+            IERC721(addrERC721[i]).safeTransferFrom(
                 _msgSender(),
                 address(this),
                 id721[i],
                 ""
             );
-            IERC721Upgradeable(addrERC721[i]).safeTransferFrom(
+            IERC721(addrERC721[i]).safeTransferFrom(
                 address(this),
                 createdAccount,
                 id721[i],
@@ -178,7 +132,7 @@ contract FactoryMarket is
             require(msg.value == _amount, "CRO3");
         }
         if (_orderType == OrderType.ERC721) {
-            IERC721Upgradeable(_target).safeTransferFrom(
+            IERC721(_target).safeTransferFrom(
                 msg.sender,
                 address(this),
                 _nftID,
@@ -194,7 +148,7 @@ contract FactoryMarket is
             order.seller = msg.sender;
             order.target = _target;
         } else if (_orderType == OrderType.ERC1155) {
-            IERC1155Upgradeable(_target).safeTransferFrom(
+            IERC1155(_target).safeTransferFrom(
                 msg.sender,
                 address(this),
                 _nftID,
@@ -210,26 +164,6 @@ contract FactoryMarket is
             order.price = _price;
             order.seller = msg.sender;
             order.target = _target;
-        } else if (_orderType == OrderType.Account) {
-            OrderInfo storage order = OrderByHash[_hashOrder];
-            require(
-                accountAddress[msg.sender] == _target,
-                "Cant sell foreign account"
-            );
-            require(blockedAccount[_target] != true, "Blocked account");
-            require(
-                IAccountPlayer(_target).currentowner() == _msgSender(),
-                "CANAEFVAE"
-            );
-            IAccountPlayer(_target).setPause(true);
-            order.target = _target;
-            order.typeOrder = _orderType;
-            order.amount = 1;
-            order.data = _data;
-            order.nftId = 0;
-            order.paymentToken = _paymentToken;
-            order.price = _price;
-            order.seller = msg.sender;
         }
         emit CreatedOrder(_target, msg.sender, _hashOrder, _orderType);
     }
@@ -242,19 +176,15 @@ contract FactoryMarket is
         OrderInfo storage _order = OrderByHash[hashOrder];
         uint256 amountToPayment = _order.price * _amount;
         uint256 amountToSeller = calculateFee(amountToPayment);
-        //send payment to seller
         if (_order.paymentToken == address(0)) {
-            AddressUpgradeable.sendValue(
-                payable(_order.seller),
-                amountToSeller
-            );
+            Address.sendValue(payable(_order.seller), amountToSeller);
         } else {
-            IERC20Upgradeable(_order.paymentToken).safeTransferFrom(
+            IERC20(_order.paymentToken).safeTransferFrom(
                 _msgSender(),
                 address(this),
                 _order.price
             );
-            IERC20Upgradeable(_order.paymentToken).safeTransfer(
+            IERC20(_order.paymentToken).safeTransfer(
                 _order.seller,
                 amountToSeller
             );
@@ -266,7 +196,10 @@ contract FactoryMarket is
             amountToSeller
         );
         if (_order.typeOrder == OrderType.ERC721) {
-            IERC721Upgradeable(_order.target).safeTransferFrom(
+            if (checkAccount(_order.target) == true) {
+                IAccountPlayer(_order.target).grandRoleNewOwner(_msgSender());
+            }
+            IERC721(_order.target).safeTransferFrom(
                 address(this),
                 msg.sender,
                 _order.nftId,
@@ -281,7 +214,7 @@ contract FactoryMarket is
             delete OrderByHash[hashOrder];
         } else if (_order.typeOrder == OrderType.ERC1155) {
             require(_order.amount >= _amount, "Cant buy more than sale");
-            IERC1155Upgradeable(_order.target).safeTransferFrom(
+            IERC1155(_order.target).safeTransferFrom(
                 address(this),
                 receiver,
                 _order.nftId,
@@ -299,54 +232,32 @@ contract FactoryMarket is
             if (_order.amount == 0) {
                 delete OrderByHash[hashOrder];
             }
-        } else if (_order.typeOrder == OrderType.Account) {
-            require(blockedAccount[_order.target] != true, "Blocked account");
-            require(
-                accountAddress[_msgSender()] == address(0),
-                "You cant have more accounts"
-            );
-            IAccountPlayer(_order.target).grandRoleNewOwner(_msgSender());
-            delete accountAddress[_order.seller];
-            accountAddress[_msgSender()] = _order.target;
-            IAccountPlayer(_order.target).setPause(false);
-            emit BuyInOrder(
-                _order.target,
-                receiver,
-                hashOrder,
-                _order.typeOrder
-            );
-            delete OrderByHash[hashOrder];
         }
     }
 
-    // function is721(address _nft) private view returns (bool) {
-    //     return IERC165(_nft).supportsInterface(type(IERC721).interfaceId);
-    // }
-
-    // function is1155(address _nft) private view returns (bool) {
-    //     return IERC165(_nft).supportsInterface(type(IERC1155).interfaceId);
-    // }
+    function checkAccount(address target) internal returns (bool) {
+        (bool success, ) = target.call(abi.encodeWithSignature("currentowner"));
+        return success;
+    }
 
     function cancelOrder(bytes32 hashOrder, address receiveTarget) public {
         OrderInfo storage order = OrderByHash[hashOrder];
         require(msg.sender == order.seller);
         if (order.typeOrder == OrderType.ERC721) {
-            IERC721Upgradeable(order.target).safeTransferFrom(
+            IERC721(order.target).safeTransferFrom(
                 address(this),
                 receiveTarget,
                 order.nftId,
                 order.data
             );
         } else if (order.typeOrder == OrderType.ERC1155) {
-            IERC1155Upgradeable(order.target).safeTransferFrom(
+            IERC1155(order.target).safeTransferFrom(
                 address(this),
                 receiveTarget,
                 order.nftId,
                 order.amount,
                 order.data
             );
-        } else if (order.typeOrder == OrderType.Account) {
-            IAccountPlayer(order.target).setPause(false);
         }
         emit CancelOrder(order.target, msg.sender, hashOrder, order.typeOrder);
         delete OrderByHash[hashOrder];
@@ -370,36 +281,21 @@ contract FactoryMarket is
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (uint256)
     {
-        IERC20Upgradeable(_token).transfer(address(msg.sender), _amount);
+        IERC20(_token).transfer(address(msg.sender), _amount);
         emit Withdraw(address(msg.sender), _token, _amount);
         return _amount;
     }
 
     function widtrawValue(uint256 _amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        AddressUpgradeable.sendValue(payable(_msgSender()), _amount);
-    }
-
-    function onERC721Received(
-        address _operator,
-        address _from,
-        uint256 _tokenId,
-        bytes memory _data
-    ) public pure returns (bytes4) {
-        return this.onERC721Received.selector;
+        Address.sendValue(payable(_msgSender()), _amount);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC1155ReceiverUpgradeable, AccessControlUpgradeable)
+        override(ERC1155Receiver, AccessControl)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
     }
-
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {}
 }
