@@ -24,10 +24,9 @@ contract Staking is
         uint higherValue;
         uint procentPerDay;
     }
-    // PoolInfo[] public poolsInfo;
 
     IERC20Upgradeable public token;
-    // uint public totalAllocPoint = 0;
+
     mapping(uint => PoolInfo) public poolInfo;
     mapping(uint => mapping(address => UserInfo)) public usersInfo;
 
