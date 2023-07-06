@@ -1,0 +1,41 @@
+{
+  "name": "cryptobyke",
+  "version": "1.0.0",
+  "description": "cryptobyke project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.7",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/contracts": "^4.7.0",
+    "@openzeppelin/contracts-upgradeable": "^4.7.3",
+    "@openzeppelin/hardhat-upgrades": "^1.28.0",
+    "@typechain/hardhat": "^6.1.6",
+    "@uniswap/v3-core": "^1.0.1",
+    "@uniswap/v3-periphery": "^1.4.3",
+    "chai": "^4.3.7",
+    "dotenv": "^16.3.1",
+    "hardhat-abi-exporter": "^2.10.1",
+    "hardhat-contract-sizer": "^2.10.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "i": "^0.3.7",
+    "npm": "^9.4.1",
+    "openzeppelin-solidity": "^4.6.0",
+    "solidity-coverage": "^0.8.4",
+    "web3": "^1.8.2"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "hardhat": "^2.12.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
